@@ -22,7 +22,7 @@ RUN dpkg --add-architecture i386 && \
     sed -i 's/PermitRootLogin without-password/PermitRootLogin yes/' /etc/ssh/sshd_config && \
     sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd && \
     echo "export VISIBLE=now" >> /etc/profile && \
-	  wget --no-check-certificate https://oss.oracle.com/debian/dists/unstable/non-free/binary-i386/oracle-xe-universal_10.2.0.1-1.1_i386.deb && \
+	  wget --no-check-certificate --quiet https://oss.oracle.com/debian/dists/unstable/non-free/binary-i386/oracle-xe-universal_10.2.0.1-1.1_i386.deb && \
     dpkg -i oracle-xe-universal_10.2.0.1-1.1_i386.deb && \
     rm oracle-xe-universal_10.2.0.1-1.1_i386.deb && \
     printf 8080\\n1521\\noracle\\noracle\\ny\\n | /etc/init.d/oracle-xe configure && \
