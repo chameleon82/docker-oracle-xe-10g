@@ -30,14 +30,16 @@ RUN dpkg --add-architecture i386 && \
     echo 'export LD_LIBRARY_PATH=$ORACLE_HOME/lib' >> /etc/bash.bashrc && \
     echo 'export PATH=$ORACLE_HOME/bin:$PATH' >> /etc/bash.bashrc && \
     echo 'export ORACLE_SID=XE' >> /etc/bash.bashrc && \
-	echo 'export NLS_LANG=AMERICAN_AMERICA.AL32UTF8' >> /etc/bash.bashrc
+    echo 'export NLS_LANG=AMERICAN_AMERICA.AL32UTF8' >> /etc/bash.bashrc && \
+    echo '#!/bin/sh' > /bin/startdb && \
+    echo 'sed -i -E "s/HOST = [^)]+/HOST = $HOSTNAME/g" /usr/lib/oracle/xe/app/oracle/product/10.2.0/server/network/admin/listener.ora' >> /bin/startdb && \
+    echo 'sed -i -E "s/HOST = [^)]+/HOST = $HOSTNAME/g" /usr/lib/oracle/xe/app/oracle/product/10.2.0/server/network/admin/tnsnames.ora' >> /bin/startdb && \	
+    echo 'service oracle-xe start' >> /bin/startdb && \
+    echo 'echo "alter system disable restricted session;" | sqlplus -s SYSTEM/oracle' >> /bin/startdb && \
+    echo 'echo "EXEC DBMS_XDB.SETLISTENERLOCALACCESS(FALSE);" | sqlplus -s SYSTEM/oracle' >> /bin/startdb && \
+    echo '/usr/sbin/sshd -D &' >> /bin/startdb && \
+    chmod +x /bin/startdb	
 
 EXPOSE 1521 22 8080
 
-CMD sed -i -E "s/HOST = [^)]+/HOST = $HOSTNAME/g" /usr/lib/oracle/xe/app/oracle/product/10.2.0/server/network/admin/listener.ora; \
-    sed -i -E "s/HOST = [^)]+/HOST = $HOSTNAME/g" /usr/lib/oracle/xe/app/oracle/product/10.2.0/server/network/admin/tnsnames.ora; \
-    service oracle-xe start; \
-    su -c "$ORACLE_HOME/bin/lsnrctl start" oracle; \
-    echo "alter system disable restricted session;" | sqlplus -s SYSTEM/oracle; \
-    echo "EXEC DBMS_XDB.SETLISTENERLOCALACCESS(FALSE);" | sqlplus -s SYSTEM/oracle; \
-    /usr/sbin/sshd -D
+CMD startdb && tail -f /usr/lib/oracle/xe/app/oracle/admin/XE/bdump/alert_XE.log
