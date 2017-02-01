@@ -1,4 +1,4 @@
-FROM debian:wheezy
+FROM debian:wheezy-slim
 
 MAINTAINER Nekrasov Alexander <snake_nas@mail.ru>
 
@@ -6,7 +6,7 @@ ENV ORACLE_HOME=/usr/lib/oracle/xe/app/oracle/product/10.2.0/server
 ENV LD_LIBRARY_PATH=$ORACLE_HOME/lib
 ENV PATH=$ORACLE_HOME/bin:$PATH
 ENV ORACLE_SID=XE
-ENV NLS_LANG=AMERICAN_AMERICA.AL32UTF8
+ENV NLS_LANG=AMERICAN_AMERICA.CL8ISO8859P5
 
 RUN dpkg --add-architecture i386 && \
     apt-get update && apt-get install -y \
@@ -25,12 +25,13 @@ RUN dpkg --add-architecture i386 && \
 	  wget --no-check-certificate --quiet https://oss.oracle.com/debian/dists/unstable/non-free/binary-i386/oracle-xe-universal_10.2.0.1-1.1_i386.deb && \
     dpkg -i oracle-xe-universal_10.2.0.1-1.1_i386.deb && \
     rm oracle-xe-universal_10.2.0.1-1.1_i386.deb && \
+    sed -i 's/51200K/4096K/' /usr/lib/oracle/xe/app/oracle/product/10.2.0/server/config/scripts/cloneDBCreation.sql && \        
     printf 8080\\n1521\\noracle\\noracle\\ny\\n | /etc/init.d/oracle-xe configure && \
     echo 'export ORACLE_HOME=/usr/lib/oracle/xe/app/oracle/product/10.2.0/server' >> /etc/bash.bashrc && \
     echo 'export LD_LIBRARY_PATH=$ORACLE_HOME/lib' >> /etc/bash.bashrc && \
     echo 'export PATH=$ORACLE_HOME/bin:$PATH' >> /etc/bash.bashrc && \
     echo 'export ORACLE_SID=XE' >> /etc/bash.bashrc && \
-    echo 'export NLS_LANG=AMERICAN_AMERICA.AL32UTF8' >> /etc/bash.bashrc && \
+    echo 'export NLS_LANG=AMERICAN_AMERICA.CL8ISO8859P5' >> /etc/bash.bashrc && \
     echo '#!/bin/sh' > /bin/startdb && \
     echo 'sed -i -E "s/HOST = [^)]+/HOST = $HOSTNAME/g" /usr/lib/oracle/xe/app/oracle/product/10.2.0/server/network/admin/listener.ora' >> /bin/startdb && \
     echo 'sed -i -E "s/HOST = [^)]+/HOST = $HOSTNAME/g" /usr/lib/oracle/xe/app/oracle/product/10.2.0/server/network/admin/tnsnames.ora' >> /bin/startdb && \	
