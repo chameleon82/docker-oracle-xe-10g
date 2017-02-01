@@ -6,7 +6,7 @@ ENV ORACLE_HOME=/usr/lib/oracle/xe/app/oracle/product/10.2.0/server
 ENV LD_LIBRARY_PATH=$ORACLE_HOME/lib
 ENV PATH=$ORACLE_HOME/bin:$PATH
 ENV ORACLE_SID=XE
-ENV NLS_LANG=AMERICAN_AMERICA.CL8ISO8859P5
+ENV NLS_LANG=AMERICAN_AMERICA.AL32UTF8
 
 RUN dpkg --add-architecture i386 && \
     apt-get update && apt-get install -y \
@@ -31,7 +31,7 @@ RUN dpkg --add-architecture i386 && \
     echo 'export LD_LIBRARY_PATH=$ORACLE_HOME/lib' >> /etc/bash.bashrc && \
     echo 'export PATH=$ORACLE_HOME/bin:$PATH' >> /etc/bash.bashrc && \
     echo 'export ORACLE_SID=XE' >> /etc/bash.bashrc && \
-    echo 'export NLS_LANG=AMERICAN_AMERICA.CL8ISO8859P5' >> /etc/bash.bashrc && \
+    echo 'export NLS_LANG=AMERICAN_AMERICA.AL32UTF8' >> /etc/bash.bashrc && \
     echo '#!/bin/sh' > /bin/startdb && \
     echo 'sed -i -E "s/HOST = [^)]+/HOST = $HOSTNAME/g" /usr/lib/oracle/xe/app/oracle/product/10.2.0/server/network/admin/listener.ora' >> /bin/startdb && \
     echo 'sed -i -E "s/HOST = [^)]+/HOST = $HOSTNAME/g" /usr/lib/oracle/xe/app/oracle/product/10.2.0/server/network/admin/tnsnames.ora' >> /bin/startdb && \	
